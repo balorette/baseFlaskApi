@@ -1,38 +1,28 @@
 from flask_restful import Resource
 from flask import request, jsonify
-import json
-from box import Box
 from utils.mongo_db import SyncMongo
-from conf import uri
-
-config = Box({'db': {'mongo':{'uri': uri, 'db': 'data01'}}})
+from config import config
 
 
-class mongo_handler(Resource):
+class MongoHandler(Resource):
+    """Resource for basic MongoDB interactions."""
     mg = SyncMongo(config)
     col = 'exrts'
 
     def get(self):
-        if request.args:
-            key = request.args['key']
-            value = request.args['value']
-        else:
-            return "Provide a request please"
-
-        results = {}
-
+        key = request.args.get('key')
+        value = request.args.get('value')
+        if not key or not value:
+            return "Provide a key and value query", 400
         try:
             results = self.mg.read(self.col, kvPair={key: value})
-
-        except Exception as E:
-            return E
-
+        except Exception as e:
+            return str(e), 500
         return jsonify(results)
 
     def post(self):
-        if request.json:
-            d = request.json
-            docid = self.mg.write(self.col, data=d)
-            return jsonify(docid)
-        else:
-            return "Need Json Data"
+        if not request.is_json:
+            return "Need JSON data", 400
+        d = request.get_json()
+        docid = self.mg.write(self.col, data=d)
+        return jsonify(docid)

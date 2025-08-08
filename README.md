@@ -1,18 +1,32 @@
 # Python Flask API
 > Base flask API example
 
-This is a project provides a starting point for a base flask API
+This project provides a starting point for a base flask API.
 
-## TODO
-Continue building and learning 
+## Setup
 
-## Usage example
+```bash
+pip install -r requirements.txt
+```
 
-I'll fill this out later.
+Environment variables can be used to configure the MongoDB connection:
 
-## Development setup
+- `MONGO_URI` (default `mongodb://localhost:27017`)
+- `MONGO_DB` (default `data01`)
+- `HOST` (default `0.0.0.0`)
+- `PORT` (default `5000`)
 
-Nothing right now
+## Running
+
+```bash
+python app.py
+```
+
+## Testing
+
+```bash
+pytest
+```
 
 ## Release History
 
@@ -21,7 +35,4 @@ Nothing right now
 
 ## Meta
 
-Bryan Lorette 
-
-
-<!-- Markdown link & img dfn's -->
+Bryan Lorette

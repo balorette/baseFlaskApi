@@ -1,11 +1,14 @@
 import copy
+from pymongo import MongoClient
+import bson
+
 
 class SyncMongo:
     """
     Instantiates Synchronous Mongo Client.
 
-    For Synchronous IO to a Mongo Database, this class creates the client, then with built-in methods can handel
-    standard operations.
+    For synchronous IO to a Mongo database, this class creates the client then
+    handles standard operations.
 
     Attributes
     -----------
@@ -13,7 +16,7 @@ class SyncMongo:
         The URI for the current DB
 
     db : str
-        The name of the DB in side of Mongo
+        The name of the DB inside Mongo
 
     Methods
     -----------
@@ -23,16 +26,12 @@ class SyncMongo:
 
     read(collection, data)
         Reads information from the Mongo DB
-
     """
-    from pymongo import MongoClient
-
-    import bson
 
     def __init__(self, config):
         """
-        Pass either a config file or a URI and DB in order to create the connection. Either use the config or the URI
-        and DB values
+        Pass either a config file or a URI and DB in order to create the
+        connection. Either use the config or the URI and DB values
 
         Parameters
         ---------
@@ -43,9 +42,8 @@ class SyncMongo:
         self.uri = self._conf.uri
         self.db = self._conf.db
 
-        self._conn = self.MongoClient(self.uri)
+        self._conn = MongoClient(self.uri)
         self._db = self._conn[self.db]
-
 
     def read(self, collection, docId=None, kvPair=None):
         """
@@ -60,19 +58,18 @@ class SyncMongo:
         kvPair : dict
             A key value pair for a query
         """
-
-        if kvPair and type(kvPair) is dict:
+        if kvPair and isinstance(kvPair, dict):
             query = kvPair
         elif docId:
-            if type(docId) is str:
-                query= {'_id': self.bson.objectid.ObjectId(docId)}
-            elif type(docId) is self.bson.objectid.ObjectId:
+            if isinstance(docId, str):
+                query = {'_id': bson.objectid.ObjectId(docId)}
+            elif isinstance(docId, bson.objectid.ObjectId):
                 query = {'_id': docId}
             else:
                 print('Doc id only accepted as string or bson object id')
                 return
         else:
-            print('Please ensure your varialbes are set properly')
+            print('Please ensure your variables are set properly')
             return
         try:
             doc = self._db[collection].find_one(query)
@@ -114,4 +111,4 @@ class SyncMongo:
 
         except Exception as e:
             print(e)
-            raise Exception
+            raise e
